@@ -19,9 +19,11 @@ We assume you have a working root module with proper Google provider configurati
 1. Create upfront or in your root terraform module 4 VPC networks with one subnet in each. All subnets must be in the region where you want to deploy FortiGates and their CIDRs cannot overlap
 1. Copy license files (*.lic) to the root module folder if you plan to deploy BYOL version. If using BYOL version you also have to change the `image_family` or `image_name` variable
 1. Reference this module in your code (eg. main.tf) to use it, eg.:
-        module "fgt-ha" {  
-          source = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform"  
-        }
+    ```
+    module "fgt-ha" {  
+      source = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform"  
+    }
+    ```
 1. In the above module block provide the variables described in `variables.tf`. Only 1 variable is obligatory (`subnets`), but you might want to provide values also to some others:
     - `region` - name of the region to deploy to (zones will be selected automatically). Defaults to **europe-west1**
     - `zones` - list of 2 zones for FortiGate VMs. Always match these to your production workloads to avoid inter-zone traffic fees. You can skip for proof-of-concept deployments and let the module automatically detect zones in the region.
