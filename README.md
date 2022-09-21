@@ -11,6 +11,8 @@ This terraform module can be used to deploy the base part of FortiGate reference
 - static external IP addresses for management bound to nic3 (port4) of FortiGates
 - Cloud NAT to allow traffic initiated by FGTs out
 
+> NOTE: This module currently does NOT create frontends (forwarding rules) for the External Load Balancer
+
 ### How to use this module
 We assume you have a working root module with proper Google provider configuration. If you don't - start by reading [Google Provider Configuration Reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference).
 
