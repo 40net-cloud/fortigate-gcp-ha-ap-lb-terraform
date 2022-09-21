@@ -1,5 +1,5 @@
 module "fgt_ha" {
-  source        = "../../"
+  source        = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform"
 
   prefix        = "fgt-example-byol"
   license_files = ["dummy_lic1.lic", "dummy_lic2.lic"]
