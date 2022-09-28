@@ -1,6 +1,5 @@
 variable region {
   type        = string
-  default     = "europe-west1"
   description = "Region to deploy all resources in. Must match var.zones if defined."
 }
 

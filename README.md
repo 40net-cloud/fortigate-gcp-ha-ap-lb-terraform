@@ -24,11 +24,13 @@ We assume you have a working root module with proper Google provider configurati
       source = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform"  
     }
     ```
-1. In the above module block provide the variables described in `variables.tf`. Only 1 variable is obligatory (`subnets`), but you might want to provide values also to some others:
-    - `region` - name of the region to deploy to (zones will be selected automatically). Defaults to **europe-west1**
+1. In the above module block provide the variables described in `variables.tf`. Only 2 variables are obligatory:
+    - `region` - name of the region to deploy to (zones will be selected automatically); it also indicates subnets to use
+    - `subnets` - list of 4 names of subnets already existing in the region to be used as external, internal, heartbeat and management networks.
+
+    but you might want to provide values also to some others:
     - `zones` - list of 2 zones for FortiGate VMs. Always match these to your production workloads to avoid inter-zone traffic fees. You can skip for proof-of-concept deployments and let the module automatically detect zones in the region.
     - `license_files` - list of paths to 2 license (.lic) files to be applied to the FortiGates. If skipped, VMs will be deployed without license and you will have to apply them manually upon first connection. It is highly recommended to apply BYOL licenses during deployment.
-    - `subnets` - list of 4 names of subnets already existing in the region to be used as external, internal, heartbeat and management networks.
     - `prefix` - prefix to be added to the names of all created resources (defaults to "**fgt**")
     - `machine-type` - type of VM to use for deployment. Defaults to **e2-standard-4** which is a good (cheaper) choice for evaluation, but offers lower performance than n2 or c2 families.
     - `image_family` or `image_name` - for selecting different firmware version or different licensing model. Defaults to newest 7.0 image with PAYG licensing (fortigate-70-payg)
