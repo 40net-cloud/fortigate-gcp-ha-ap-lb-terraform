@@ -67,28 +67,28 @@ variable fgt_config {
 }
 
 variable logdisk_size {
-  type = number
+  type        = number
   description = "Size of the attached logdisk in GB"
-  default = 30
+  default     = 30
   validation {
-    condition = var.logdisk_size > 10
+    condition     = var.logdisk_size > 10
     error_message = "Log disk size cannot be smaller than 10GB."
   }
 }
 
 variable image_family {
-  type = string
+  type        = string
   description = "Image family. Overriden by providing explicit image name"
-  default = "fortigate-70-payg"
+  default     = "fortigate-70-payg"
   validation {
-    condition = can(regex("^fortigate-[67][0-9]-(byol|payg)$", var.image_family))
+    condition     = can(regex("^fortigate-[67][0-9]-(byol|payg)$", var.image_family))
     error_message = "The image_family is always in form 'fortigate-[major version]-[payg or byol]' (eg. 'fortigate-72-byol')."
   }
 }
 
 variable image_name {
-  type = string
+  type        = string
   description = "Image name. Overrides var.firmware_family"
-  default = null
-  nullable = true
+  default     = null
+  nullable    = true
 }

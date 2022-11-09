@@ -207,20 +207,20 @@ resource "google_compute_forwarding_rule" "ilb_fwd_rule" {
 }
 
 resource "google_compute_route" "default_route" {
-  name = "${var.prefix}rt-default-via-fgt"
-  dest_range = "0.0.0.0/0"
-  network = data.google_compute_subnetwork.subnets[1].network
-  next_hop_ilb = google_compute_forwarding_rule.ilb_fwd_rule.self_link
-  priority = 100
+  name                   = "${var.prefix}rt-default-via-fgt"
+  dest_range             = "0.0.0.0/0"
+  network                = data.google_compute_subnetwork.subnets[1].network
+  next_hop_ilb           = google_compute_forwarding_rule.ilb_fwd_rule.self_link
+  priority               = 100
 }
 
 # ELB BES
 resource "google_compute_region_backend_service" "elb_bes" {
-  provider = google-beta
-  name = "${var.prefix}bes-elb-${local.region_short}"
-  region = var.region
-  load_balancing_scheme = "EXTERNAL"
-  protocol = "UNSPECIFIED"
+  provider               = google-beta
+  name                   = "${var.prefix}bes-elb-${local.region_short}"
+  region                 = var.region
+  load_balancing_scheme  = "EXTERNAL"
+  protocol               = "UNSPECIFIED"
 
   backend {
     group                = google_compute_instance_group.fgt-umigs[0].self_link
@@ -288,10 +288,10 @@ resource "google_compute_router" "nat_router" {
 }
 
 resource "google_compute_router_nat" "cloud_nat" {
-  name                      = "${var.prefix}nat-cloudnat-${local.region_short}"
-  router                    = google_compute_router.nat_router.name
-  region                    = var.region
-  nat_ip_allocate_option    = "AUTO_ONLY"
+  name                   = "${var.prefix}nat-cloudnat-${local.region_short}"
+  router                 = google_compute_router.nat_router.name
+  region                 = var.region
+  nat_ip_allocate_option = "AUTO_ONLY"
   source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
   subnetwork {
     name                    = data.google_compute_subnetwork.subnets[0].self_link
