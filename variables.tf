@@ -92,3 +92,9 @@ variable image_name {
   default     = null
   nullable    = true
 }
+
+variable api_token_secret_name {
+  type        = string
+  description = "Name of Secret Manager secret to be created and used for storing FortiGate API token. If left to empty string the secret will not be created and token will be available in outputs only."
+  default     = ""
+}

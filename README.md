@@ -10,6 +10,7 @@ This terraform module can be used to deploy the base part of FortiGate reference
 - cloud firewall rules allowing cluster sync and administrative access
 - static external IP addresses for management bound to nic3 (port4) of FortiGates
 - Cloud NAT to allow traffic initiated by FGTs out
+- (optionally) Secret Manager secret with FGT API token
 
 > NOTE: This module currently does NOT create frontends (forwarding rules) for the External Load Balancer
 

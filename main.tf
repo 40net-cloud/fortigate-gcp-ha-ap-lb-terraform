@@ -302,14 +302,17 @@ resource "google_compute_router_nat" "cloud_nat" {
 # OPTIONAL
 
 # Save api_key to Secret Manager
-#resource "google_secret_manager_secret" "api-secret" {
-#  secret_id              = "${google_compute_instance.fgt-vm[0].name}-apikey"
+resource "google_secret_manager_secret" "api-secret" {
+  count                  = var.api_token_secret_name!="" ? 1 : 0
+  secret_id              = var.api_token_secret_name
 
-#  replication {
-#    automatic            = true
-#  }
-#}
-#resource "google_secret_manager_secret_version" "api_key" {
-#  secret                 = google_secret_manager_secret.api-secret.id
-#  secret_data            = random_string.api_key.id
-#}
+  replication {
+    automatic            = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "api_key" {
+  count                  = var.api_token_secret_name!="" ? 1 : 0
+  secret                 = google_secret_manager_secret.api-secret[0].id
+  secret_data            = random_string.api_key.id
+}
