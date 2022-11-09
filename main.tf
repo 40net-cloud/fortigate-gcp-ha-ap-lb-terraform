@@ -128,7 +128,7 @@ resource "google_compute_instance" "fgt-vm" {
 
   metadata = {
     user-data            = (count.index == 0 ? local.config_active : local.config_passive )
-//    license              = fileexists(var.license_files[count.index]) ? file(var.license_files[count.index]) : null
+    license              = fileexists(var.license_files[count.index]) ? file(var.license_files[count.index]) : null
     serial-port-enable   = true
   }
 
