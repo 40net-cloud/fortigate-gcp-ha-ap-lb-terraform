@@ -1,8 +1,8 @@
-# Find the public image to be used for deployment. Modify this block if you want to use
-# an image different than the newest 7.0 PAYG series. You can indicate image by either
-# image family or image name.
+# Find the public image to be used for deployment. You can indicate image by either
+# image family or image name. By default, the Fortinet's public project and newest
+# 72 PAYG image is used.
 data "google_compute_image" "fgt_image" {
-  project         = "fortigcp-project-001"
+  project         = var.image_project
   family          = var.image_name == null ? var.image_family : null
   name            = var.image_name
 }

@@ -34,7 +34,7 @@ We assume you have a working root module with proper Google provider configurati
     - `prefix` - prefix to be added to the names of all created resources (defaults to "**fgt**")
     - `machine-type` - type of VM to use for deployment. Defaults to **e2-standard-4** which is a good (cheaper) choice for evaluation, but offers lower performance than n2 or c2 families.
     - `image_family` or `image_name` - for selecting different firmware version or different licensing model. Defaults to newest 7.0 image with PAYG licensing (fortigate-70-payg)
-    - `frontends` - list of names to be used to create ELB frontends and EIPs. Resource names will be prepended with the `var.prefix` and resource type.
+    - `frontends` - list of names to be used to create ELB frontends and EIPs. By default no frontends are created. Resource names will be prepended with the `var.prefix` and resource type.
 1. Run the deployment using the tool of your choice (eg. `terraform init; terraform apply` from command line)
 
 Examples can be found in [examples](examples) directory.

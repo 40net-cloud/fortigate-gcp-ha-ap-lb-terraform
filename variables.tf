@@ -85,7 +85,7 @@ variable logdisk_size {
 variable image_family {
   type        = string
   description = "Image family. Overriden by providing explicit image name"
-  default     = "fortigate-70-payg"
+  default     = "fortigate-72-payg"
   validation {
     condition     = can(regex("^fortigate-[67][0-9]-(byol|payg)$", var.image_family))
     error_message = "The image_family is always in form 'fortigate-[major version]-[payg or byol]' (eg. 'fortigate-72-byol')."
@@ -97,6 +97,12 @@ variable image_name {
   description = "Image name. Overrides var.firmware_family"
   default     = null
   nullable    = true
+}
+
+variable image_project {
+  type        = string
+  description = "Project hosting the image. Defaults to Fortinet public project"
+  default     = "fortigcp-project-001"
 }
 
 variable api_token_secret_name {
