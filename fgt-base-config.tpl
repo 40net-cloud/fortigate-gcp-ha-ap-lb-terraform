@@ -52,6 +52,15 @@ config system interface
   edit port1
     set mode static
     set ip ${ext_ip}/32
+    set secondary-IP enable
+    config secondaryip
+%{ for name, eip in frontend_eips ~}
+      edit 0
+        set ip ${eip}/32
+        set allowaccess probe-response
+      next
+%{ endfor ~}
+    end
   next
   edit port2
     set mode static
@@ -102,6 +111,16 @@ config router static
     set dst 130.211.0.0/22
     set gateway ${int_gw}
   next
+end
+
+config firewall ippool
+%{ for name, eip in frontend_eips ~}
+  edit ${name}
+  set startip ${eip}
+  set endip ${eip}
+  set comment "GCP load balancer frontend"
+  next
+%{ endfor ~}
 end
 
 ${fgt_config}

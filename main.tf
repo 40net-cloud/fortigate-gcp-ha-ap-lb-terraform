@@ -78,6 +78,7 @@ locals {
     mgmt_gw                = data.google_compute_subnetwork.subnets[3].gateway_address
     ilb_ip                 = google_compute_address.ilb.address
     api_acl                = var.api_acl
+    frontend_eips          = [ for eip in google_compute_address.frontends : eip.address ]
     fgt_config             = var.fgt_config
   })
 
@@ -98,6 +99,7 @@ locals {
     mgmt_gw                = data.google_compute_subnetwork.subnets[3].gateway_address
     ilb_ip                 = google_compute_address.ilb.address
     api_acl                = var.api_acl
+    frontend_eips          = { for eip in google_compute_address.frontends : eip.name=>eip.address }
     fgt_config             = var.fgt_config
   })
 
@@ -297,6 +299,27 @@ resource "google_compute_router_nat" "cloud_nat" {
     name                    = data.google_compute_subnetwork.subnets[0].self_link
     source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
   }
+}
+
+# ELB Frontends
+resource "google_compute_address" "frontends" {
+  for_each = toset(var.frontends)
+
+  name = "${var.prefix}eip-${each.value}"
+  region = var.region
+  address_type = "EXTERNAL"
+}
+
+resource "google_compute_forwarding_rule" "frontends" {
+  for_each = toset(var.frontends)
+
+  name = "${var.prefix}fr-${each.value}"
+  region = var.region
+  ip_address = google_compute_address.frontends[each.value].self_link
+  ip_protocol = "L3_DEFAULT"
+  all_ports = true
+  load_balancing_scheme = "EXTERNAL"
+  backend_service = google_compute_region_backend_service.elb_bes.self_link
 }
 
 # OPTIONAL

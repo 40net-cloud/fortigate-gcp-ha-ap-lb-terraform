@@ -6,4 +6,9 @@ module "fgt_ha" {
   image_family  = "fortigate-70-byol"
   subnets       = [ var.subnet_external, var.subnet_internal, var.subnet_hasync, var.subnet_mgmt]
   region        = "us-central1"
+  frontends     = ["app1"]
+}
+
+output outputs {
+  value = module.fgt_ha
 }

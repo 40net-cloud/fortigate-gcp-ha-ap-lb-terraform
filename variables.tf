@@ -24,6 +24,12 @@ variable subnets {
   }
 }
 
+variable frontends {
+  type        = list(string)
+  default     = []
+  description = "List of public IP names to be linked or created as ELB frontend."
+}
+
 variable machine_type {
   type        = string
   default     = "e2-standard-4"
@@ -39,13 +45,13 @@ variable service_account {
 variable admin_acl {
   type        = list(string)
   default     = ["0.0.0.0/0"]
-  description = "List of CIDRs allowed to connect to FortiGate management interfaces"
+  description = "List of CIDRs allowed to connect to FortiGate management interfaces. Defaults to 0.0.0.0/0"
 }
 
 variable api_acl {
   type        = list(string)
   default     = []
-  description = "List of CIDRs allowed to connect to FortiGate API (must not be 0.0.0.0/0)"
+  description = "List of CIDRs allowed to connect to FortiGate API (must not be 0.0.0.0/0). Defaults to empty list."
 }
 
 variable license_files {

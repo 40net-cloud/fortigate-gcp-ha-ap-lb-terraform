@@ -38,6 +38,7 @@ module "fgt_ha" {
   prefix        = "fgt-example-payg"
   region        = var.region
   image_family  = "fortigate-72-payg"
+  frontends     = ["app1"]
   subnets       = [ for sb in google_compute_subnetwork.demo : sb.name ]
 
   depends_on    = [

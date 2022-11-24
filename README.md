@@ -6,13 +6,12 @@ This terraform module can be used to deploy the base part of FortiGate reference
 - zonal instance groups to be used later as components of backend services
 - internal load balancer resources in trusted (internal) network
 - backend service in external network (load balancer without frontends)
+- (optionally) external IP addresses and ELB frontends (forwarding rules)
 - cloud firewall rules opening ALL communication on untrusted and trusted networks
 - cloud firewall rules allowing cluster sync and administrative access
 - static external IP addresses for management bound to nic3 (port4) of FortiGates
 - Cloud NAT to allow traffic initiated by FGTs out
 - (optionally) Secret Manager secret with FGT API token
-
-> NOTE: This module currently does NOT create frontends (forwarding rules) for the External Load Balancer
 
 ### How to use this module
 We assume you have a working root module with proper Google provider configuration. If you don't - start by reading [Google Provider Configuration Reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference).
@@ -30,11 +29,12 @@ We assume you have a working root module with proper Google provider configurati
     - `subnets` - list of 4 names of subnets already existing in the region to be used as external, internal, heartbeat and management networks.
 
     but you might want to provide values also to some others:
-    - `zones` - list of 2 zones for FortiGate VMs. Always match these to your production workloads to avoid inter-zone traffic fees. You can skip for proof-of-concept deployments and let the module automatically detect zones in the region.
+    - `zones` - list of 2 zones for FortiGate VMs. Always match these to your production workloads to avoid [inter-zone traffic fees](https://cloud.google.com/vpc/network-pricing). You can skip for proof-of-concept deployments and let the module automatically detect zones in the region.
     - `license_files` - list of paths to 2 license (.lic) files to be applied to the FortiGates. If skipped, VMs will be deployed without license and you will have to apply them manually upon first connection. It is highly recommended to apply BYOL licenses during deployment.
     - `prefix` - prefix to be added to the names of all created resources (defaults to "**fgt**")
     - `machine-type` - type of VM to use for deployment. Defaults to **e2-standard-4** which is a good (cheaper) choice for evaluation, but offers lower performance than n2 or c2 families.
     - `image_family` or `image_name` - for selecting different firmware version or different licensing model. Defaults to newest 7.0 image with PAYG licensing (fortigate-70-payg)
+    - `frontends` - list of names to be used to create ELB frontends and EIPs. Resource names will be prepended with the `var.prefix` and resource type.
 1. Run the deployment using the tool of your choice (eg. `terraform init; terraform apply` from command line)
 
 Examples can be found in [examples](examples) directory.
