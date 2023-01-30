@@ -56,6 +56,7 @@ resource "google_compute_disk" "logdisk" {
   size                   = var.logdisk_size
   type                   = "pd-ssd"
   zone                   = local.zones[count.index]
+  labels                 = var.labels
 }
 
 
@@ -113,10 +114,12 @@ resource "google_compute_instance" "fgt-vm" {
   machine_type           = var.machine_type
   can_ip_forward         = true
   tags                   = ["fgt"]
+  labels                 = var.labels
 
   boot_disk {
     initialize_params {
       image              = data.google_compute_image.fgt_image.self_link
+      labels             = var.labels
     }
   }
   attached_disk {
@@ -206,6 +209,7 @@ resource "google_compute_forwarding_rule" "ilb_fwd_rule" {
   load_balancing_scheme  = "INTERNAL"
   backend_service        = google_compute_region_backend_service.ilb_bes.self_link
   allow_global_access    = true
+  labels                 = var.labels
 }
 
 resource "google_compute_route" "default_route" {
@@ -303,23 +307,24 @@ resource "google_compute_router_nat" "cloud_nat" {
 
 # ELB Frontends
 resource "google_compute_address" "frontends" {
-  for_each = toset(var.frontends)
+  for_each              = toset(var.frontends)
 
-  name = "${var.prefix}eip-${each.value}"
-  region = var.region
-  address_type = "EXTERNAL"
+  name                  = "${var.prefix}eip-${each.value}"
+  region                = var.region
+  address_type          = "EXTERNAL"
 }
 
 resource "google_compute_forwarding_rule" "frontends" {
-  for_each = toset(var.frontends)
+  for_each              = toset(var.frontends)
 
-  name = "${var.prefix}fr-${each.value}"
-  region = var.region
-  ip_address = google_compute_address.frontends[each.value].self_link
-  ip_protocol = "L3_DEFAULT"
-  all_ports = true
+  name                  = "${var.prefix}fr-${each.value}"
+  region                = var.region
+  ip_address            = google_compute_address.frontends[each.value].self_link
+  ip_protocol           = "L3_DEFAULT"
+  all_ports             = true
   load_balancing_scheme = "EXTERNAL"
-  backend_service = google_compute_region_backend_service.elb_bes.self_link
+  backend_service       = google_compute_region_backend_service.elb_bes.self_link
+  labels                = var.labels
 }
 
 # OPTIONAL

@@ -109,3 +109,9 @@ variable api_token_secret_name {
   description = "Name of Secret Manager secret to be created and used for storing FortiGate API token. If left to empty string the secret will not be created and token will be available in outputs only."
   default     = ""
 }
+
+variable labels {
+  type = map(string)
+  description = "Map of labels to be applied to the VMs, disks, and forwarding rules"
+  default = {}
+}

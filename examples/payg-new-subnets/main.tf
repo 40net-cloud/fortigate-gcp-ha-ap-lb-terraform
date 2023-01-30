@@ -38,6 +38,10 @@ module "fgt_ha" {
   prefix        = "fgt-example-payg"
   region        = var.region
   image_family  = "fortigate-72-payg"
+  labels        = {
+    owner : "johndoe"
+    env   : "test"
+  }
   frontends     = ["app1"]
   subnets       = [ for sb in google_compute_subnetwork.demo : sb.name ]
 
