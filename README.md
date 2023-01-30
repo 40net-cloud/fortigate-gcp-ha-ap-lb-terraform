@@ -32,21 +32,25 @@ We assume you have a working root module with proper Google provider configurati
     - `zones` - list of 2 zones for FortiGate VMs. Always match these to your production workloads to avoid [inter-zone traffic fees](https://cloud.google.com/vpc/network-pricing). You can skip for proof-of-concept deployments and let the module automatically detect zones in the region.
     - `license_files` - list of paths to 2 license (.lic) files to be applied to the FortiGates. If skipped, VMs will be deployed without license and you will have to apply them manually upon first connection. It is highly recommended to apply BYOL licenses during deployment.
     - `prefix` - prefix to be added to the names of all created resources (defaults to "**fgt**")
+    - `labels` - map of [Google Cloud labels](https://cloud.google.com/compute/docs/labeling-resources) to be applied to VMs, disks and forwarding rules
+    - `admin_acl` - list of CIDRs allowed to access FortiGates' management interfaces (defaults to [0.0.0.0/0])
     - `machine-type` - type of VM to use for deployment. Defaults to **e2-standard-4** which is a good (cheaper) choice for evaluation, but offers lower performance than n2 or c2 families.
-    - `image_family` or `image_name` - for selecting different firmware version or different licensing model. Defaults to newest 7.0 image with PAYG licensing (fortigate-70-payg)
+    - `image_family` or `image_name` - for selecting different firmware version or different licensing model. Defaults to newest 7.2 image with PAYG licensing (fortigate-72-payg)
     - `frontends` - list of names to be used to create ELB frontends and EIPs. By default no frontends are created. Resource names will be prepended with the `var.prefix` and resource type.
 1. Run the deployment using the tool of your choice (eg. `terraform init; terraform apply` from command line)
 
 Examples can be found in [examples](examples) directory.
 
-#### Licensing
+### Licensing
 FortiGates in GCP can be licensed in 3 ways:
 1. PAYG - paid per each hour of use via Google Cloud Marketplace after you deploy. This is the default setting for this module and you don't need to change anything to use it.
 2. BYOL - pay upfront via Fortinet Reseller. You will receive the license activation code, which needs to be registered in [Fortinet Support Portal](https://support.fortinet.com). After activation you will receive **.lic** license files which you need to add to your terraform deployment code and reference using `license_files` input variable. You will also need to change the `image_family` or `image_name` variable to a byol image.
-3. FlexVM (EA) - if you have an Enterprise Agreement with Fortinet and use FlexVM portal, you will have to change the deployed image to BYOL and apply the Flex activation code using FortiGate CLI after deployment. Provisioning of FlexVM during bootstrapping is not yet supported in GCP.
+3. FlexVM (EA) - if you have an Enterprise Agreement with Fortinet and use FlexVM portal, you will have to change the deployed image to BYOL and apply the Flex activation code using FortiGate CLI after deployment. Provisioning of FlexVM during bootstrapping is now supported in GCP, but not yet implemented in this module.
+
+### Connecting to management interface
+After deployment you can access management interfaces of both instances directly through their public management addresses listed in `fgt_mgmt_eips` module output. By default you can access management interfaces from any network, but the access can (and should!) be restricted by using the `admin_acl` module variable. The initial password is set to the instance id of the primary fortigate (listed in module output `fgt_password`) and you will have to change it upon first login.
 
 ### Customizations
 1. add your configuration to fgt-base-config.tpl to have it applied during provisioning
 1. all addresses are static but picked automatically from the pool of available addresses for a given subnet. modify addresses.tf to manually indicate addresses you want to assign.
 1. Change bootdisk image referenced in `google_compute_instance.fgt-vm` block in [main.tf](main.tf) to explicit image URL if you want to use your private custom FortiGate image. Note that this module will NOT automatically detect use of MULTI_IP_SUBNET feature if your image uses it.
-1. Uncomment references to Google Secret Manager at the end of main.tf file to save FortiGate API token to the secret manager.
