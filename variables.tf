@@ -95,8 +95,7 @@ variable image_family {
 variable image_name {
   type        = string
   description = "Image name. Overrides var.firmware_family"
-  default     = null
-  nullable    = true
+  default     = ""
 }
 
 variable image_project {

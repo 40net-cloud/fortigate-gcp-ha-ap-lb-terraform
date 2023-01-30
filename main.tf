@@ -3,8 +3,8 @@
 # 72 PAYG image is used.
 data "google_compute_image" "fgt_image" {
   project         = var.image_project
-  family          = var.image_name == null ? var.image_family : null
-  name            = var.image_name
+  family          = var.image_name == "" ? var.image_family : null
+  name            = var.image_name != "" ? var.image_name : null
 }
 
 
