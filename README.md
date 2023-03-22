@@ -16,7 +16,7 @@ This terraform module can be used to deploy the base part of FortiGate reference
 ### How to use this module
 We assume you have a working root module with proper Google provider configuration. If you don't - start by reading [Google Provider Configuration Reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference).
 
-1. Create upfront or in your root terraform module 4 VPC networks with one subnet in each. All subnets must be in the region where you want to deploy FortiGates and their CIDRs cannot overlap
+1. Create before you start or define in your root terraform module 4 VPC networks with one subnet in each. All subnets must be in the region where you want to deploy FortiGates and their CIDRs cannot overlap
 1. Copy license files (*.lic) to the root module folder if you plan to deploy BYOL version. If using BYOL version you also have to change the `image_family` or `image_name` variable
 1. Reference this module in your code (eg. main.tf) to use it, eg.:
     ```
@@ -45,12 +45,14 @@ Examples can be found in [examples](examples) directory.
 FortiGates in GCP can be licensed in 3 ways:
 1. PAYG - paid per each hour of use via Google Cloud Marketplace after you deploy. This is the default setting for this module and you don't need to change anything to use it.
 2. BYOL - pay upfront via Fortinet Reseller. You will receive the license activation code, which needs to be registered in [Fortinet Support Portal](https://support.fortinet.com). After activation you will receive **.lic** license files which you need to add to your terraform deployment code and reference using `license_files` input variable. You will also need to change the `image_family` or `image_name` variable to a byol image.
-3. FlexVM (EA) - if you have an Enterprise Agreement with Fortinet and use FlexVM portal, you will have to change the deployed image to BYOL and apply the Flex activation code using FortiGate CLI after deployment. Provisioning of FlexVM during bootstrapping is now supported in GCP, but not yet implemented in this module.
+3. FlexVM (EA) - if you have an Enterprise Agreement with Fortinet and use FlexVM portal, you will have to change the deployed image to BYOL. License tokens can be passed to the module using `flexvm_tokens` variable. Note that tokens cannot be re-used. If you need to re-deploy cluster with the same licenses you need to regenerate tokens in FlexVM portal.
 
 ### Connecting to management interface
 After deployment you can access management interfaces of both instances directly through their public management addresses listed in `fgt_mgmt_eips` module output. By default you can access management interfaces from any network, but the access can (and should!) be restricted by using the `admin_acl` module variable. The initial password is set to the instance id of the primary fortigate (listed in module output `fgt_password`) and you will have to change it upon first login.
 
+### Configuration
+* External IP addresses
+
 ### Customizations
 1. add your configuration to fgt-base-config.tpl to have it applied during provisioning
 1. all addresses are static but picked automatically from the pool of available addresses for a given subnet. modify addresses.tf to manually indicate addresses you want to assign.
-1. Change bootdisk image referenced in `google_compute_instance.fgt-vm` block in [main.tf](main.tf) to explicit image URL if you want to use your private custom FortiGate image. Note that this module will NOT automatically detect use of MULTI_IP_SUBNET feature if your image uses it.

@@ -62,7 +62,7 @@ resource "google_compute_disk" "logdisk" {
 
 
 locals {
-  config_active          = templatefile("${path.module}/fgt-base-config.tpl", {
+  config_active_noflex   = templatefile("${path.module}/fgt-base-config.tpl", {
     hostname               = "${var.prefix}vm-${local.zones_short[0]}"
     unicast_peer_ip        = google_compute_address.hasync_priv[1].address
     unicast_peer_netmask   = cidrnetmask(data.google_compute_subnetwork.subnets[2].ip_cidr_range)
@@ -79,11 +79,11 @@ locals {
     mgmt_gw                = data.google_compute_subnetwork.subnets[3].gateway_address
     ilb_ip                 = google_compute_address.ilb.address
     api_acl                = var.api_acl
-    frontend_eips          = [ for eip in google_compute_address.frontends : eip.address ]
+    frontend_eips          = { for eip in google_compute_address.frontends : eip.name=>eip.address }
     fgt_config             = var.fgt_config
   })
 
-  config_passive         = templatefile("${path.module}/fgt-base-config.tpl", {
+  config_passive_noflex  = templatefile("${path.module}/fgt-base-config.tpl", {
     hostname               = "${var.prefix}vm-${local.zones_short[1]}"
     unicast_peer_ip        = google_compute_address.hasync_priv[0].address
     unicast_peer_netmask   = cidrnetmask(data.google_compute_subnetwork.subnets[2].ip_cidr_range)
@@ -104,6 +104,17 @@ locals {
     fgt_config             = var.fgt_config
   })
 
+  config_active_flex     = templatefile("${path.module}/fgt-base-flex-wrapper.tftpl", {
+    fgt_config   = local.config_active_noflex
+    flexvm_token = var.flexvm_tokens[0]
+    })
+  config_passive_flex    = templatefile("${path.module}/fgt-base-flex-wrapper.tftpl", {
+    fgt_config   = local.config_passive_noflex
+    flexvm_token = var.flexvm_tokens[1]
+    })
+
+  config_active  = length(var.flexvm_tokens[0])>1 ? local.config_active_flex : local.config_active_noflex
+  config_passive = length(var.flexvm_tokens[1])>1 ? local.config_passive_flex : local.config_passive_noflex
 }
 
 resource "google_compute_instance" "fgt-vm" {
