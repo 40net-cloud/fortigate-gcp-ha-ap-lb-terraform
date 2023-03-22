@@ -22,7 +22,7 @@ end
 config system sdn-connector
     edit "gcp"
         set type gcp
-        set ha-status enable
+        set ha-status disable
     next
 end
 config system dns
@@ -42,7 +42,7 @@ config system ha
             set gateway ${mgmt_gw}
         next
     end
-    set override disable
+    set override enable
     set priority ${ha_prio}
     set unicast-hb enable
     set unicast-hb-peerip ${unicast_peer_ip}
