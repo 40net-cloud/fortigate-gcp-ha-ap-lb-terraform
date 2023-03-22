@@ -48,12 +48,6 @@ variable admin_acl {
   description = "List of CIDRs allowed to connect to FortiGate management interfaces. Defaults to 0.0.0.0/0"
 }
 
-variable api_acl {
-  type        = list(string)
-  default     = []
-  description = "List of CIDRs allowed to connect to FortiGate API (must not be 0.0.0.0/0). Defaults to empty list."
-}
-
 variable license_files {
   type        = list(string)
   default     = ["null","null"]
@@ -108,6 +102,18 @@ variable image_project {
   type        = string
   description = "Project hosting the image. Defaults to Fortinet public project"
   default     = "fortigcp-project-001"
+}
+
+variable api_accprofile {
+  type = string
+  default = ""
+  description = "Role (accprofile) to be assigned to the 'terraform' API account on FortiGates. Eg. prof_admin"
+}
+
+variable api_acl {
+  type        = list(string)
+  default     = []
+  description = "List of CIDRs allowed to connect to FortiGate API (must not be 0.0.0.0/0). Defaults to empty list."
 }
 
 variable api_token_secret_name {

@@ -79,6 +79,7 @@ locals {
     mgmt_gw                = data.google_compute_subnetwork.subnets[3].gateway_address
     ilb_ip                 = google_compute_address.ilb.address
     api_acl                = var.api_acl
+    api_accprofile         = var.api_accprofile
     frontend_eips          = { for eip in google_compute_address.frontends : eip.name=>eip.address }
     fgt_config             = var.fgt_config
   })
@@ -100,6 +101,7 @@ locals {
     mgmt_gw                = data.google_compute_subnetwork.subnets[3].gateway_address
     ilb_ip                 = google_compute_address.ilb.address
     api_acl                = var.api_acl
+    api_accprofile         = var.api_accprofile
     frontend_eips          = { for eip in google_compute_address.frontends : eip.name=>eip.address }
     fgt_config             = var.fgt_config
   })

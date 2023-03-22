@@ -6,10 +6,11 @@ config system probe-response
     set http-probe-value OK
     set port ${healthcheck_port}
 end
+%{ if length(api_accprofile) > 0 }
 config system api-user
   edit terraform
     set api-key ${api_key}
-    set accprofile "prof_admin"
+    set accprofile "${api_accprofile}"
     config trusthost
     %{ for cidr in api_acl ~}
       edit 0
@@ -19,6 +20,7 @@ config system api-user
     end
   next
 end
+%{ endif }
 config system sdn-connector
     edit "gcp"
         set type gcp
@@ -52,6 +54,7 @@ config system interface
   edit port1
     set mode static
     set ip ${ext_ip}/32
+    set allowaccess ping
     set secondary-IP enable
     config secondaryip
 %{ for name, eip in frontend_eips ~}
