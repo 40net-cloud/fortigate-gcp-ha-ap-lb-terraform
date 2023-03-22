@@ -43,7 +43,7 @@ module "fgt_ha" {
     env   : "test"
   }
   frontends     = ["app1"]
-  subnets       = [ for sb in google_compute_subnetwork.demo : sb.name ]
+  subnets       = [ for key in var.network_names: google_compute_subnetwork.demo[ key ].name ]
 
   depends_on    = [
     google_compute_subnetwork.demo
