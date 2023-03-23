@@ -127,3 +127,9 @@ variable labels {
   description = "Map of labels to be applied to the VMs, disks, and forwarding rules"
   default = {}
 }
+
+variable routes {
+  type = map(string)
+  description = "name=>cidr map of routes to be introduced in internal network"
+  default = {"default" : "0.0.0.0/0"}
+}

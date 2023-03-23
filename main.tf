@@ -225,9 +225,11 @@ resource "google_compute_forwarding_rule" "ilb_fwd_rule" {
   labels                 = var.labels
 }
 
-resource "google_compute_route" "default_route" {
-  name                   = "${var.prefix}rt-default-via-fgt"
-  dest_range             = "0.0.0.0/0"
+resource "google_compute_route" "outbound_routes" {
+  for_each = var.routes
+
+  name                   = "${var.prefix}rt-${each.key}-via-fgt"
+  dest_range             = each.value
   network                = data.google_compute_subnetwork.subnets[1].network
   next_hop_ilb           = google_compute_forwarding_rule.ilb_fwd_rule.self_link
   priority               = 100
