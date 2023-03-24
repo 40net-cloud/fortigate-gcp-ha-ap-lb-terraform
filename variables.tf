@@ -137,3 +137,13 @@ variable routes {
   description = "name=>cidr map of routes to be introduced in internal network"
   default = {"default" : "0.0.0.0/0"}
 }
+
+variable nic_type {
+  type = string
+  description = "Type of NIC to use for FortiGates. Allowed values are GVNIC or VIRTIO_NET"
+  default = "VIRTIO_NET"
+  validation {
+    condition = contains(["GVNIC", "VIRTIO_NET"], var.nic_type)
+    error_message = "Unsupported value of nic_type variable. Allowed values are GVNIC or VIRTIO_NET."
+  }
+}
