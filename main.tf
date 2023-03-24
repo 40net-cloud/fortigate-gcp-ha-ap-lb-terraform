@@ -80,7 +80,7 @@ locals {
     ilb_ip                 = google_compute_address.ilb.address
     api_acl                = var.api_acl
     api_accprofile         = var.api_accprofile
-    frontend_eips          = { for eip in google_compute_address.frontends : eip.name=>eip.address }
+    frontend_eips          = local.eip_all
     fgt_config             = var.fgt_config
   })
 
@@ -102,7 +102,7 @@ locals {
     ilb_ip                 = google_compute_address.ilb.address
     api_acl                = var.api_acl
     api_accprofile         = var.api_accprofile
-    frontend_eips          = { for eip in google_compute_address.frontends : eip.name=>eip.address }
+    frontend_eips          = local.eip_all
     fgt_config             = var.fgt_config
   })
 
@@ -235,26 +235,7 @@ resource "google_compute_route" "outbound_routes" {
   priority               = 100
 }
 
-# ELB BES
-resource "google_compute_region_backend_service" "elb_bes" {
-  provider               = google-beta
-  name                   = "${var.prefix}bes-elb-${local.region_short}"
-  region                 = var.region
-  load_balancing_scheme  = "EXTERNAL"
-  protocol               = "UNSPECIFIED"
 
-  backend {
-    group                = google_compute_instance_group.fgt-umigs[0].self_link
-  }
-  backend {
-    group                = google_compute_instance_group.fgt-umigs[1].self_link
-  }
-
-  health_checks          = [google_compute_region_health_check.health_check.self_link]
-  connection_tracking_policy {
-    connection_persistence_on_unhealthy_backends = "NEVER_PERSIST"
-  }
-}
 
 
 
@@ -320,27 +301,6 @@ resource "google_compute_router_nat" "cloud_nat" {
   }
 }
 
-# ELB Frontends
-resource "google_compute_address" "frontends" {
-  for_each              = toset(var.frontends)
-
-  name                  = "${var.prefix}eip-${each.value}"
-  region                = var.region
-  address_type          = "EXTERNAL"
-}
-
-resource "google_compute_forwarding_rule" "frontends" {
-  for_each              = toset(var.frontends)
-
-  name                  = "${var.prefix}fr-${each.value}"
-  region                = var.region
-  ip_address            = google_compute_address.frontends[each.value].self_link
-  ip_protocol           = "L3_DEFAULT"
-  all_ports             = true
-  load_balancing_scheme = "EXTERNAL"
-  backend_service       = google_compute_region_backend_service.elb_bes.self_link
-  labels                = var.labels
-}
 
 # OPTIONAL
 

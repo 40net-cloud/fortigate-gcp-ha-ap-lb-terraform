@@ -51,7 +51,7 @@ FortiGates in GCP can be licensed in 3 ways:
 After deployment you can access management interfaces of both instances directly through their public management addresses listed in `fgt_mgmt_eips` module output. By default you can access management interfaces from any network, but the access can (and should!) be restricted by using the `admin_acl` module variable. The initial password is set to the instance id of the primary fortigate (listed in module output `fgt_password`) and you will have to change it upon first login.
 
 ### Configuration
-* External IP addresses
+* [External IP addresses](docs/public_ip_addresses.md)
 
 ### Customizations
 1. add your configuration to fgt-base-config.tpl to have it applied during provisioning
