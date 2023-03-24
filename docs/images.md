@@ -63,3 +63,17 @@ module fgt_ha {
   image_project = "my-project"
 }
 ```
+
+***NOTE:*** if using a custom image with GVNIC support, you can use GVNIC driver by setting `nic_type`:
+
+```
+module fgt_ha {
+  source        = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform"
+
+  region        = "us-central1"
+  subnets       = [ "external", "internal", "hasync", "mgmt" ]
+  image_name    = "my-fgt-image"
+  image_project = "my-project"
+  nic_type      = "GVNIC"
+}
+```

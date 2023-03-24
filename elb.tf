@@ -5,7 +5,7 @@ locals {
 
   # format existing EIP list into mapping by name, skip non-existing addresses, skip IN_USE addresses
   eip_existing_existing = { for addr,info in data.google_compute_addresses.existing : addr => info if length(info.addresses)>0 }
-  eip_existing = { for addr,info in local.eip_existing_existing : trimprefix(info.addresses[0].name, "${var.prefix}-") => addr if info.addresses[0].status!="IN_USE"}
+  eip_existing = { for addr,info in local.eip_existing_existing : trimprefix(info.addresses[0].name, local.prefix) => addr if info.addresses[0].status!="IN_USE"}
 
   # format new EIP list into mapping by name
   eip_new = {for name,info in google_compute_address.new_eip : name => info.address }
@@ -35,7 +35,7 @@ data "google_compute_addresses" "existing" {
 resource "google_compute_address" "new_eip" {
   for_each = toset(local.in_eip_new)
 
-  name                  = "${var.prefix}eip-${each.value}"
+  name                  = "${local.prefix}eip-${each.value}"
   region                = var.region
   address_type          = "EXTERNAL"
 }
@@ -43,7 +43,7 @@ resource "google_compute_address" "new_eip" {
 resource "google_compute_forwarding_rule" "frontends" {
   for_each              = local.eip_all
 
-  name                  = "${var.prefix}fr-${each.key}"
+  name                  = "${local.prefix}fr-${each.key}"
   region                = var.region
   ip_address            = each.value
   ip_protocol           = "L3_DEFAULT"
@@ -55,7 +55,7 @@ resource "google_compute_forwarding_rule" "frontends" {
 
 resource "google_compute_region_backend_service" "elb_bes" {
   provider               = google-beta
-  name                   = "${var.prefix}bes-elb-${local.region_short}"
+  name                   = "${local.prefix}bes-elb-${local.region_short}"
   region                 = var.region
   load_balancing_scheme  = "EXTERNAL"
   protocol               = "UNSPECIFIED"

@@ -41,6 +41,11 @@ locals {
   ]
 }
 
+locals {
+  # If prefix is defined, add a "-" spacer after it
+  prefix = length(var.prefix)>0 && substr(var.prefix, -1, 1)!="-" ? "${var.prefix}-" : var.prefix
+}
+
 # Create new random API key to be provisioned in FortiGates.
 resource "random_string" "api_key" {
   length                 = 30
@@ -52,7 +57,7 @@ resource "random_string" "api_key" {
 resource "google_compute_disk" "logdisk" {
   count                  = 2
 
-  name                   = "${var.prefix}disk-logdisk${count.index+1}-${local.zones_short[count.index]}"
+  name                   = "${local.prefix}disk-logdisk${count.index+1}-${local.zones_short[count.index]}"
   size                   = var.logdisk_size
   type                   = "pd-ssd"
   zone                   = local.zones[count.index]
@@ -63,7 +68,7 @@ resource "google_compute_disk" "logdisk" {
 
 locals {
   config_active_noflex   = templatefile("${path.module}/fgt-base-config.tpl", {
-    hostname               = "${var.prefix}vm-${local.zones_short[0]}"
+    hostname               = "${local.prefix}vm-${local.zones_short[0]}"
     unicast_peer_ip        = google_compute_address.hasync_priv[1].address
     unicast_peer_netmask   = cidrnetmask(data.google_compute_subnetwork.subnets[2].ip_cidr_range)
     ha_prio                = 1
@@ -85,7 +90,7 @@ locals {
   })
 
   config_passive_noflex  = templatefile("${path.module}/fgt-base-config.tpl", {
-    hostname               = "${var.prefix}vm-${local.zones_short[1]}"
+    hostname               = "${local.prefix}vm-${local.zones_short[1]}"
     unicast_peer_ip        = google_compute_address.hasync_priv[0].address
     unicast_peer_netmask   = cidrnetmask(data.google_compute_subnetwork.subnets[2].ip_cidr_range)
     ha_prio                = 0
@@ -123,7 +128,7 @@ resource "google_compute_instance" "fgt-vm" {
   count                  = 2
 
   zone                   = local.zones[count.index]
-  name                   = "${var.prefix}vm${count.index+1}-${local.zones_short[count.index]}"
+  name                   = "${local.prefix}vm${count.index+1}-${local.zones_short[count.index]}"
   machine_type           = var.machine_type
   can_ip_forward         = true
   tags                   = ["fgt"]
@@ -178,7 +183,7 @@ resource "google_compute_instance" "fgt-vm" {
 
 # Common Load Balancer resources
 resource "google_compute_region_health_check" "health_check" {
-  name                   = "${var.prefix}healthcheck-http${var.healthcheck_port}-${local.region_short}"
+  name                   = "${local.prefix}healthcheck-http${var.healthcheck_port}-${local.region_short}"
   region                 = var.region
   timeout_sec            = 2
   check_interval_sec     = 2
@@ -191,61 +196,14 @@ resource "google_compute_region_health_check" "health_check" {
 resource "google_compute_instance_group" "fgt-umigs" {
   count                  = 2
 
-  name                   = "${var.prefix}umig${count.index}-${local.zones_short[count.index]}"
+  name                   = "${local.prefix}umig${count.index}-${local.zones_short[count.index]}"
   zone                   = google_compute_instance.fgt-vm[count.index].zone
   instances              = [google_compute_instance.fgt-vm[count.index].self_link]
 }
 
-# Resources building Internal Load Balancer
-resource "google_compute_region_backend_service" "ilb_bes" {
-  provider               = google-beta
-  name                   = "${var.prefix}bes-ilb-${local.region_short}"
-  region                 = var.region
-  network                = data.google_compute_subnetwork.subnets[1].network
-
-  backend {
-    group                = google_compute_instance_group.fgt-umigs[0].self_link
-  }
-  backend {
-    group                = google_compute_instance_group.fgt-umigs[1].self_link
-  }
-
-  health_checks          = [google_compute_region_health_check.health_check.self_link]
-  connection_tracking_policy {
-    connection_persistence_on_unhealthy_backends = "NEVER_PERSIST"
-  }
-}
-
-resource "google_compute_forwarding_rule" "ilb_fwd_rule" {
-  name                   = "${var.prefix}fwdrule-ilb-${local.region_short}"
-  region                 = var.region
-  network                = data.google_compute_subnetwork.subnets[1].network
-  subnetwork             = data.google_compute_subnetwork.subnets[1].id
-  ip_address             = google_compute_address.ilb.address
-  all_ports              = true
-  load_balancing_scheme  = "INTERNAL"
-  backend_service        = google_compute_region_backend_service.ilb_bes.self_link
-  allow_global_access    = true
-  labels                 = var.labels
-}
-
-resource "google_compute_route" "outbound_routes" {
-  for_each = var.routes
-
-  name                   = "${var.prefix}rt-${each.key}-via-fgt"
-  dest_range             = each.value
-  network                = data.google_compute_subnetwork.subnets[1].network
-  next_hop_ilb           = google_compute_forwarding_rule.ilb_fwd_rule.self_link
-  priority               = 100
-}
-
-
-
-
-
 # Firewall rules
 resource "google_compute_firewall" "allow-mgmt" {
-  name                   = "${var.prefix}fw-mgmt-allow-admin"
+  name                   = "${local.prefix}fw-mgmt-allow-admin"
   network                = data.google_compute_subnetwork.subnets[3].network
   source_ranges          = var.admin_acl
   target_tags            = ["fgt"]
@@ -256,7 +214,7 @@ resource "google_compute_firewall" "allow-mgmt" {
 }
 
 resource "google_compute_firewall" "allow-hasync" {
-  name                   = "${var.prefix}fw-hasync-allow-fgt"
+  name                   = "${local.prefix}fw-hasync-allow-fgt"
   network                = data.google_compute_subnetwork.subnets[2].network
   source_tags            = ["fgt"]
   target_tags            = ["fgt"]
@@ -267,7 +225,7 @@ resource "google_compute_firewall" "allow-hasync" {
 }
 
 resource "google_compute_firewall" "allow-port1" {
-  name                   = "${var.prefix}fw-ext-allowall"
+  name                   = "${local.prefix}fw-ext-allowall"
   network                = data.google_compute_subnetwork.subnets[0].network
   source_ranges          = ["0.0.0.0/0"]
 
@@ -277,7 +235,7 @@ resource "google_compute_firewall" "allow-port1" {
 }
 
 resource "google_compute_firewall" "allow-port2" {
-  name                   = "${var.prefix}fw-int-allowall"
+  name                   = "${local.prefix}fw-int-allowall"
   network                = data.google_compute_subnetwork.subnets[1].network
   source_ranges          = ["0.0.0.0/0"]
 
@@ -286,29 +244,7 @@ resource "google_compute_firewall" "allow-port2" {
   }
 }
 
-# Enable outbound connectivity via Cloud NAT
-resource "google_compute_router" "nat_router" {
-  name                   = "${var.prefix}cr-cloudnat-${local.region_short}"
-  region                 = var.region
-  network                = data.google_compute_subnetwork.subnets[0].network
-}
-
-resource "google_compute_router_nat" "cloud_nat" {
-  name                   = "${var.prefix}nat-cloudnat-${local.region_short}"
-  router                 = google_compute_router.nat_router.name
-  region                 = var.region
-  nat_ip_allocate_option = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "LIST_OF_SUBNETWORKS"
-  subnetwork {
-    name                    = data.google_compute_subnetwork.subnets[0].self_link
-    source_ip_ranges_to_nat = ["ALL_IP_RANGES"]
-  }
-}
-
-
-# OPTIONAL
-
-# Save api_key to Secret Manager
+# Save api_key to Secret Manager if var.api_token_secret_name is set
 resource "google_secret_manager_secret" "api-secret" {
   count                  = var.api_token_secret_name!="" ? 1 : 0
   secret_id              = var.api_token_secret_name
