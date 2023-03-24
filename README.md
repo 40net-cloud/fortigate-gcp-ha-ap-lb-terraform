@@ -53,6 +53,7 @@ After deployment you can access management interfaces of both instances directly
 ### Configuration
 * [External IP addresses](docs/public_ip_addresses.md)
 * [Using ARM-based machine type (T2A family)](docs/arm-based-machine-type.md)
+* [Selecting proper boot image](docs/images.md)
 
 ### Customizations
 1. add your configuration to fgt-base-config.tpl to have it applied during provisioning
