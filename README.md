@@ -18,7 +18,7 @@ This terraform module can be used to deploy the base part of FortiGate reference
 ### How to use this module
 We assume you have a working root module with proper Google provider configuration. If you don't - start by reading [Google Provider Configuration Reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference).
 
-1. Create before you start or define in your root terraform module 4 VPC networks with one subnet in each. All subnets must be in the region where you want to deploy FortiGates and their CIDRs cannot overlap
+1. Create before you start (or define in your root terraform module) 4 VPC networks with one subnet in each. All subnets must be in the region where you want to deploy FortiGates and their CIDRs cannot overlap
 1. Copy license files (*.lic) to the root module folder if you plan to deploy BYOL version. If using BYOL version you also have to change the `image_family` or `image_name` variable
 1. Reference this module in your code (eg. main.tf) to use it, eg.:
     ```
@@ -53,10 +53,9 @@ FortiGates in GCP can be licensed in 3 ways:
 After deployment you can access management interfaces of both instances directly through their public management addresses listed in `fgt_mgmt_eips` module output. By default you can access management interfaces from any network, but the access can (and should!) be restricted by using the `admin_acl` module variable. The initial password is set to the instance id of the primary fortigate (listed in module output `fgt_password`) and you will have to change it upon first login.
 
 ### Configuration
-* [External IP addresses](docs/public_ip_addresses.md)
+* [External IP addresses](examples/public_addresses-elb-frontend)
 * [Using ARM-based machine type (T2A family)](examples/arm-based-machine-type)
 * [Selecting proper boot image](docs/images.md)
 
 ### Customizations
-1. add your configuration to fgt-base-config.tpl to have it applied during provisioning
 1. all addresses are static but picked automatically from the pool of available addresses for a given subnet. modify addresses.tf to manually indicate addresses you want to assign.
