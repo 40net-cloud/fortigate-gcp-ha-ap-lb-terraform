@@ -1,6 +1,8 @@
 # FortiGate Terraform module:
 ## HA Active-Passive cluster (FGCP in load balancer sandwich)
 
+![architecture diagram](./diagram.png)
+
 This terraform module can be used to deploy the base part of FortiGate reference architecture consisting of:
 - 2 FortiGate VM instances - preconfigured in FGCP Active-Passive cluster
 - zonal instance groups to be used later as components of backend services
@@ -52,7 +54,7 @@ After deployment you can access management interfaces of both instances directly
 
 ### Configuration
 * [External IP addresses](docs/public_ip_addresses.md)
-* [Using ARM-based machine type (T2A family)](docs/arm-based-machine-type.md)
+* [Using ARM-based machine type (T2A family)](examples/arm-based-machine-type)
 * [Selecting proper boot image](docs/images.md)
 
 ### Customizations
