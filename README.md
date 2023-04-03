@@ -56,6 +56,7 @@ After deployment you can access management interfaces of both instances directly
 * [External IP addresses](examples/public-addresses-elb-frontend)
 * [Using ARM-based machine type (T2A family)](examples/arm-based-machine-type)
 * [Selecting proper boot image](docs/images.md)
+* [GVNIC driver and custom images](examples/gvnic-custom-image)
 
 ### Customizations
 1. all addresses are static but picked automatically from the pool of available addresses for a given subnet. modify addresses.tf to manually indicate addresses you want to assign.
