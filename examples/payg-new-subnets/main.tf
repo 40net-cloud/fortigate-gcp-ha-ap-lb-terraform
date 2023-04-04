@@ -33,7 +33,7 @@ resource google_compute_subnetwork "demo" {
 
 # deploy the FortiGates
 module "fgt_ha" {
-  source        = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform"
+  source        = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform?ref=v1.0.0"
 
   prefix        = "fgt-example-payg"
   region        = var.region

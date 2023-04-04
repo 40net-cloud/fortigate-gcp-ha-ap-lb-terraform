@@ -1,14 +1,14 @@
 resource "google_compute_image" "fgt_724_gvnic" {
   name         = "fgt-724-byol-gvnic"
   source_image = "projects/fortigcp-project-001/global/images/fortinet-fgt-724-20230310-001-w-license"
-  
+
   guest_os_features {
     type = "GVNIC"
   }
 }
 
 module "fgt_ha" {
-  source        = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform"
+  source        = "git::github.com/40net-cloud/fortigate-gcp-ha-ap-lb-terraform?ref=v1.0.0"
 
   region        = "us-central1"
   subnets       = [ "external", "internal", "hasync", "mgmt" ]
