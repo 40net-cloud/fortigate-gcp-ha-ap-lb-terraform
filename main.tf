@@ -67,7 +67,7 @@ resource "google_compute_disk" "logdisk" {
 
 
 locals {
-  config_active_noflex   = templatefile("${path.module}/fgt-base-config.tpl", {
+  config_active_noflex   = templatefile("${path.module}/fgt-base-config.tftpl", {
     hostname               = "${local.prefix}vm-${local.zones_short[0]}"
     unicast_peer_ip        = google_compute_address.hasync_priv[1].address
     unicast_peer_netmask   = cidrnetmask(data.google_compute_subnetwork.subnets[2].ip_cidr_range)
@@ -87,9 +87,10 @@ locals {
     api_accprofile         = var.api_accprofile
     frontend_eips          = local.eip_all
     fgt_config             = var.fgt_config
+    probe_loopback_ip      = var.probe_loopback_ip
   })
 
-  config_passive_noflex  = templatefile("${path.module}/fgt-base-config.tpl", {
+  config_passive_noflex  = templatefile("${path.module}/fgt-base-config.tftpl", {
     hostname               = "${local.prefix}vm-${local.zones_short[1]}"
     unicast_peer_ip        = google_compute_address.hasync_priv[0].address
     unicast_peer_netmask   = cidrnetmask(data.google_compute_subnetwork.subnets[2].ip_cidr_range)
@@ -109,6 +110,7 @@ locals {
     api_accprofile         = var.api_accprofile
     frontend_eips          = local.eip_all
     fgt_config             = var.fgt_config
+    probe_loopback_ip      = var.probe_loopback_ip
   })
 
   config_active_flex     = templatefile("${path.module}/fgt-base-flex-wrapper.tftpl", {

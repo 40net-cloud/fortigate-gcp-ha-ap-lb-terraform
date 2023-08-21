@@ -1,7 +1,7 @@
 # FortiGate Terraform module:
 ## HA Active-Passive cluster (FGCP in load balancer sandwich)
 
-![architecture diagram](./diagram.png)
+![architecture diagram](./docs/diagram.png)
 
 This terraform module can be used to deploy the base part of FortiGate reference architecture consisting of:
 - 2 FortiGate VM instances - preconfigured in FGCP Active-Passive cluster
@@ -19,7 +19,7 @@ This terraform module can be used to deploy the base part of FortiGate reference
 We assume you have a working root module with proper Google provider configuration. If you don't - start by reading [Google Provider Configuration Reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference).
 
 1. Create before you start (or define in your root terraform module) 4 VPC networks with one subnet in each. All subnets must be in the region where you want to deploy FortiGates and their CIDRs cannot overlap
-1. Copy license files (*.lic) to the root module folder if you plan to deploy BYOL version. If using BYOL version you also have to change the `image_family` or `image_name` variable
+1. Copy license files (*.lic) to the root module folder if you plan to deploy BYOL version. If using BYOL version you also have to change the `image_family` or `image_name` variable (see [examples/licensing-byol](./examples/licensing-byol) for details)
 1. Reference this module in your code (eg. main.tf) to use it, eg.:
     ```
     module "fgt-ha" {  

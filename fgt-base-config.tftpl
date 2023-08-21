@@ -87,12 +87,14 @@ config system interface
     set ip ${mgmt_ip}/32
     set allowaccess ping https ssh fgfm
   next
+%{ if length(probe_loopback_ip) > 0 }
   edit "probe"
     set vdom "root"
-    set ip 169.254.255.100 255.255.255.255
+    set ip ${probe_loopback_ip} 255.255.255.255
     set allowaccess probe-response
     set type loopback
-next
+  next
+%{ endif ~}
 end
 config router static
   edit 0

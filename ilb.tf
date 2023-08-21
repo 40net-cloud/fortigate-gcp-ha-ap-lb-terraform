@@ -1,4 +1,4 @@
-# Internal load balancer resporces
+# Internal load balancer resources
 
 # ILB is used for routing network flows from cloud workloads to any other networks.
 # List of prefixes to route via ILB is defined by var.outbound_routes (defaults to 0.0.0.0/0)

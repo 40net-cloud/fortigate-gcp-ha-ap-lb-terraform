@@ -91,14 +91,14 @@ variable image_family {
   description = "Image family. Overriden by providing explicit image name"
   default     = "fortigate-72-payg"
   validation {
-    condition     = can(regex("^fortigate-[67][0-9]-(byol|payg)$", var.image_family))
+    condition     = can(regex("^fortigate-(arm64-)?[67][0-9]-(byol|payg)$", var.image_family))
     error_message = "The image_family is always in form 'fortigate-[major version]-[payg or byol]' (eg. 'fortigate-72-byol')."
   }
 }
 
 variable image_name {
   type        = string
-  description = "Image name. Overrides var.firmware_family"
+  description = "Image name. If not empty overrides var.firmware_family"
   default     = ""
 }
 
@@ -109,9 +109,9 @@ variable image_project {
 }
 
 variable api_accprofile {
-  type = string
-  default = ""
-  description = "Role (accprofile) to be assigned to the 'terraform' API account on FortiGates. Eg. prof_admin"
+  type        = string
+  default     = ""
+  description = "Role (accprofile) to be assigned to the 'terraform' API account on FortiGates. If left empty, the API user will not be created."
 }
 
 variable api_acl {
@@ -127,23 +127,35 @@ variable api_token_secret_name {
 }
 
 variable labels {
-  type = map(string)
+  type        = map(string)
   description = "Map of labels to be applied to the VMs, disks, and forwarding rules"
-  default = {}
+  default     = {}
 }
 
 variable routes {
-  type = map(string)
+  type        = map(string)
   description = "name=>cidr map of routes to be introduced in internal network"
-  default = {"default" : "0.0.0.0/0"}
+  default     = {
+    "default" : "0.0.0.0/0"
+    }
 }
 
 variable nic_type {
-  type = string
+  type        = string
   description = "Type of NIC to use for FortiGates. Allowed values are GVNIC or VIRTIO_NET"
-  default = "VIRTIO_NET"
+  default     = "VIRTIO_NET"
   validation {
-    condition = contains(["GVNIC", "VIRTIO_NET"], var.nic_type)
+    condition     = contains(["GVNIC", "VIRTIO_NET"], var.nic_type)
     error_message = "Unsupported value of nic_type variable. Allowed values are GVNIC or VIRTIO_NET."
+  }
+}
+
+variable probe_loopback_ip {
+  type        = string
+  description = "IP address for an optional loopback health probe interface. Empty means no loopback interface will be created"
+  default     = ""
+  validation {
+    condition     = anytrue([can(regex("$((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}^", var.probe_loopback_ip)), var.probe_loopback_ip==""])
+    error_message = "Must be a proper IPv4 IP address or empty"
   }
 }

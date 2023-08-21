@@ -1,3 +1,10 @@
+# External Load Balancer is used to drive traffic from Internet to FGT cluster
+# but can be also used for outbound traffic
+#
+# var.frontends can contain both names for new addresses and values for existing addresses
+# manipulations in locals below make the module distinguish between the two
+
+
 locals {
   # split input frontends list into existing and to-be-created EIPs
   in_eip_new = [ for addr in var.frontends : addr if !can(regex( "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$", addr ))]
