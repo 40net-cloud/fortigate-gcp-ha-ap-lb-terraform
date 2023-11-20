@@ -169,11 +169,13 @@ resource "google_compute_instance" "fgt-vm" {
     subnetwork           = data.google_compute_subnetwork.subnets[2].id
     network_ip           = google_compute_address.hasync_priv[count.index].address
     nic_type             = var.nic_type
+    queue_count          = 1
   }
   network_interface {
     subnetwork           = data.google_compute_subnetwork.subnets[3].id
     network_ip           = google_compute_address.mgmt_priv[count.index].address
     nic_type             = var.nic_type
+    queue_count          = 1
     access_config {
       nat_ip             = google_compute_address.mgmt_pub[count.index].address
     }
