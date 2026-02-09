@@ -1,5 +1,9 @@
-# FortiGate Terraform module:
-## HA Active-Passive cluster (FGCP in load balancer sandwich)
+# NOTE: This repository was moved and is no longer maintained.
+## Please go to [https://github.com/fortinet/terraform-google-fgt-ha-ap-lb](https://github.com/fortinet/terraform-google-fgt-ha-ap-lb) for the official version or [https://github.com/40net-cloud/terraform-google-fgt-ha-ap-lb](https://github.com/40net-cloud/terraform-google-fgt-ha-ap-lb) for the early access
+
+
+### FortiGate Terraform module:
+### HA Active-Passive cluster (FGCP in load balancer sandwich)
 
 ![architecture diagram](./diagram.png)
 
